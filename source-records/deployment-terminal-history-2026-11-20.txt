@@ -1,0 +1,670 @@
+ubuntu@webserver:~$ docker run --rm --entrypoint bash vdi-desktop:1.2 -c '
+echo "=== VS Code ==="
+which code
+code --version
+
+echo "=== Chrome ==="
+which google-chrome-stable
+
+echo "=== Firefox ==="
+which firefox
+firefox --version
+
+echo "=== Antigravity ==="
+ls -lah /opt/antigravity/
+ls -lah /usr/local/bin/antigravity
+file /usr/local/bin/antigravity
+'
+=== VS Code ===
+/usr/bin/code
+You are trying to start Visual Studio Code as a super user which isn't recommended. If this was intended, please add the argument `--no-sandbox` and specify an alternate user data directory using the `--user-data-dir` argument.
+=== Chrome ===
+/usr/bin/google-chrome-stable
+=== Firefox ===
+/usr/local/bin/firefox
+[13] Sandbox: CanCreateUserNamespace() clone() failure: EPERM
+Mozilla Firefox 160.0.1
+=== Antigravity ===
+total 245M
+drwxr-xr-x 5 root root 4.0K Nov 20 09:26 .
+drwxr-xr-x 1 root root 4.0K Nov 20 09:25 ..
+-rw-r--r-- 1 root root  15M Nov 19 00:34 LICENSES.chromium.html
+-rwxr-xr-x 1 root root 183M Nov 19 00:34 antigravity-ide
+drwxr-xr-x 2 root root 4.0K Nov 19 00:34 bin
+-rwsr-xr-x 1 root root  17K Nov 19 00:34 chrome-sandbox
+-rw-r--r-- 1 root root 113K Nov 19 00:34 chrome_100_percent.pak
+-rw-r--r-- 1 root root 184K Nov 19 00:34 chrome_200_percent.pak
+-rwxr-xr-x 1 root root 1.5M Nov 19 00:34 chrome_crashpad_handler
+-rw-r--r-- 1 root root  10M Nov 19 00:34 icudtl.dat
+-rwxr-xr-x 1 root root 244K Nov 19 00:34 libEGL.so
+-rwxr-xr-x 1 root root 5.9M Nov 19 00:34 libGLESv2.so
+-rwxr-xr-x 1 root root 2.3M Nov 19 00:34 libffmpeg.so
+-rwxr-xr-x 1 root root  18M Nov 19 00:34 libvk_swiftshader.so
+-rwxr-xr-x 1 root root 2.4M Nov 19 00:34 libvulkan.so.1
+drwxr-xr-x 2 root root 4.0K Nov 19 00:34 locales
+drwxr-xr-x 4 root root 4.0K Nov 19 00:34 resources
+-rw-r--r-- 1 root root 6.2M Nov 19 00:34 resources.pak
+-rw-r--r-- 1 root root 395K Nov 19 00:34 snapshot_blob.bin
+-rw-r--r-- 1 root root 759K Nov 19 00:34 v8_context_snapshot.bin
+-rw-r--r-- 1 root root  107 Nov 19 00:34 vk_swiftshader_icd.json
+lrwxrwxrwx 1 root root 28 Nov 20 09:26 /usr/local/bin/antigravity -> /opt/antigravity/Antigravity
+bash: line 16: file: command not found
+ubuntu@webserver:~$ docker images vdi-desktop
+                                                                                                                                        i Info →   U  In Use
+IMAGE             ID             DISK USAGE   CONTENT SIZE   EXTRA
+vdi-desktop:1.0   a8266a746c85        667MB          159MB
+vdi-desktop:1.2   a2dda4a9271d        4.2GB         1.12GB
+ubuntu@webserver:~$ ^C
+ubuntu@webserver:~$ cd ~/vdi/desktop-image
+
+sed -i 's|/opt/antigravity/Antigravity|/opt/antigravity/antigravity-ide|' Dockerfile
+ubuntu@webserver:~/vdi/desktop-image$ grep 'ln -s.*antigravity' Dockerfile
+    && ln -s /opt/antigravity/antigravity-ide /usr/local/bin/antigravity
+ubuntu@webserver:~/vdi/desktop-image$ ^C
+ubuntu@webserver:~/vdi/desktop-image$ RUN cat > /usr/share/applications/antigravity.desktop <<'EOF'
+[Desktop Entry]
+Name=Google Antigravity
+Comment=AI Development IDE
+Exec=/usr/local/bin/antigravity --no-sandbox %F
+Terminal=false
+Type=Application
+Categories=Development;IDE;
+StartupNotify=true
+EOF
+-bash: /usr/share/applications/antigravity.desktop: Permission denied
+ubuntu@webserver:~/vdi/desktop-image$ cd ~/vdi/desktop-image
+
+cat >> Dockerfile <<'EOF'
+
+RUN cat > /usr/share/applications/antigravity.desktop <<'DESKTOP'
+[Desktop Entry]
+Name=Google Antigravity
+Comment=AI Development IDE
+Exec=/usr/local/bin/antigravity --no-sandbox %F
+Terminal=false
+Type=Application
+Categories=Development;IDE;
+StartupNotify=true
+DESKTOP
+EOF
+ubuntu@webserver:~/vdi/desktop-image$ tail -20 Dockerfile
+
+RUN update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/google-chrome-stable 100
+
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+EXPOSE 5901
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+RUN cat > /usr/share/applications/antigravity.desktop <<'DESKTOP'
+[Desktop Entry]
+Name=Google Antigravity
+Comment=AI Development IDE
+Exec=/usr/local/bin/antigravity --no-sandbox %F
+Terminal=false
+Type=Application
+Categories=Development;IDE;
+StartupNotify=true
+DESKTOP
+ubuntu@webserver:~/vdi/desktop-image$ docker build --platform linux/arm64 -t vdi-desktop:1.3 .
+[+] Building 45.7s (16/16) FINISHED                                                                                                          docker:default
+ => [internal] load build definition from Dockerfile                                                                                                   0.0s
+ => => transferring dockerfile: 2.92kB                                                                                                                 0.0s
+ => [internal] load metadata for docker.io/library/ubuntu:22.04                                                                                        0.5s
+ => [internal] load .dockerignore                                                                                                                      0.0s
+ => => transferring context: 2B                                                                                                                        0.0s
+ => [ 1/11] FROM docker.io/library/ubuntu:22.04@sha256:f64b2ffc2f10ab8f8505aa56b2664bd846cbb9df87c7e2532e30f7667021c0e6                                0.0s
+ => => resolve docker.io/library/ubuntu:22.04@sha256:f64b2ffc2f10ab8f8505aa56b2664bd846cbb9df87c7e2532e30f7667021c0e6                                  0.0s
+ => [internal] load build context                                                                                                                      0.0s
+ => => transferring context: 35B                                                                                                                       0.0s
+ => CACHED [ 2/11] RUN apt-get update && apt-get install -y --no-install-recommends     xfce4     xfce4-terminal     tigervnc-standalone-server     t  0.0s
+ => CACHED [ 3/11] RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_arm64.deb     -O /tmp/google-chrome.deb     && apt-get  0.0s
+ => CACHED [ 4/11] RUN mkdir -p /opt/firefox     && wget -q "https://download.mozilla.org/?product=firefox-latest&os=linux64-aarch64&lang=en-US"       0.0s
+ => CACHED [ 5/11] RUN wget -q https://update.code.visualstudio.com/latest/linux-deb-arm64/stable     -O /tmp/vscode.deb     && apt-get update     &&  0.0s
+ => [ 6/11] RUN mkdir -p /opt/antigravity     && wget -q        "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/2.8.0-673368291  18.8s
+ => [ 7/11] RUN mkdir -p /usr/share/applications     && cat > /usr/share/applications/antigravity.desktop <<'DESKTOP'                                  0.3s
+ => [ 8/11] RUN update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/google-chrome-stable 100                                   0.2s
+ => [ 9/11] COPY entrypoint.sh /usr/local/bin/entrypoint.sh                                                                                            0.0s
+ => [10/11] RUN chmod +x /usr/local/bin/entrypoint.sh                                                                                                  0.2s
+ => [11/11] RUN cat > /usr/share/applications/antigravity.desktop <<'DESKTOP'                                                                          0.2s
+ => exporting to image                                                                                                                                25.2s
+ => => exporting layers                                                                                                                               21.2s
+ => => exporting manifest sha256:72813f1e25cefb4f2669c885356780413f0888a49d5cee93319318afc28c44ca                                                      0.0s
+ => => exporting config sha256:4c01e70debc1fe101d905af8aab078a0eb7a364a7f61452edfa8da0ac3a341ab                                                        0.0s
+ => => exporting attestation manifest sha256:a5e5dbdd5e65727537c908eb4c75b063d170abf45f71cef47c8141e0f3122b34                                          0.0s
+ => => exporting manifest list sha256:b400dd7d25d41884a797ae7329f8af7d9f9b7f8bb87a9daec26f6e16f835dcb3                                                 0.0s
+ => => naming to docker.io/library/vdi-desktop:1.3                                                                                                     0.0s
+ => => unpacking to docker.io/library/vdi-desktop:1.3                                                                                                  4.0s
+ubuntu@webserver:~/vdi/desktop-image$ docker run --rm --entrypoint bash vdi-desktop:1.3 -c '
+ls -l /opt/antigravity/antigravity-ide
+readlink -f /usr/local/bin/antigravity
+cat /usr/share/applications/antigravity.desktop
+'
+-rwxr-xr-x 1 root root 191630624 Nov 19 00:34 /opt/antigravity/antigravity-ide
+/opt/antigravity/antigravity-ide
+[Desktop Entry]
+Name=Google Antigravity
+Comment=AI Development IDE
+Exec=/usr/local/bin/antigravity --no-sandbox %F
+Terminal=false
+Type=Application
+Categories=Development;IDE;
+StartupNotify=true
+ubuntu@webserver:~/vdi/desktop-image$ docker run --rm --entrypoint bash vdi-desktop:1.3 -c '
+echo "===== ARCHITECTURE ====="
+uname -m
+
+echo "===== CHROME ====="
+google-chrome-stable --version
+
+echo "===== FIREFOX ====="
+firefox --version
+
+echo "===== VS CODE ====="
+ls -l /usr/bin/code
+
+echo "===== ANTIGRAVITY ====="
+ls -l /opt/antigravity/antigravity-ide
+'
+===== ARCHITECTURE =====
+aarch64
+===== CHROME =====
+Google Chrome 158.0.8127.36
+===== FIREFOX =====
+[15] Sandbox: CanCreateUserNamespace() clone() failure: EPERM
+Mozilla Firefox 160.0.1
+===== VS CODE =====
+lrwxrwxrwx 1 root root 24 Nov 20 09:25 /usr/bin/code -> /usr/share/code/bin/code
+===== ANTIGRAVITY =====
+-rwxr-xr-x 1 root root 191630624 Nov 19 00:34 /opt/antigravity/antigravity-ide
+ubuntu@webserver:~/vdi/desktop-image$ docker save vdi-desktop:1.3 | sudo k3s ctr images import -
+
+
+docker.io/library/vdi desktop:1.3               saved
+application/vnd.oci.image.index.v1+json sha256:b400dd7d25d41884a797ae7329f8af7d9f9b7f8bb87a9daec26f6e16f835dcb3
+Importing       elapsed: 77.5s  total:   0.0 B  (0.0 B/s)
+ubuntu@webserver:~/vdi/desktop-image$
+ubuntu@webserver:~/vdi/desktop-image$
+ubuntu@webserver:~/vdi/desktop-image$ sudo k3s ctr images list | grep vdi-desktop
+docker.io/library/vdi-desktop:1.0                                                                                  application/vnd.oci.image.index.v1+json                   sha256:a8266a746c8590c141cf5a08c2c6b640abc81951aae4e2cd875458f839df8901 151.7 MiB linux/arm64                                                                                            io.cri-containerd.image=managed
+docker.io/library/vdi-desktop:1.3                                                                                  application/vnd.oci.image.index.v1+json                   sha256:b400dd7d25d41884a797ae7329f8af7d9f9b7f8bb87a9daec26f6e16f835dcb3 1.0 GiB   linux/arm64                                                                                            io.cri-containerd.image=managed
+ubuntu@webserver:~/vdi/desktop-image$ kubectl set image deployment/desktop-ravi01 \
+  desktop=docker.io/library/vdi-desktop:1.3 -n vdi
+
+kubectl set resources deployment/desktop-ravi01 \
+  -n vdi \
+  --requests=cpu=500m,memory=2Gi \
+  --limits=cpu=2,memory=4Gi
+deployment.apps/desktop-ravi01 image updated
+deployment.apps/desktop-ravi01 resource requirements updated
+ubuntu@webserver:~/vdi/desktop-image$ kubectl rollout status deployment/desktop-ravi01 -n vdi
+Waiting for deployment "desktop-ravi01" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "desktop-ravi01" rollout to finish: 1 old replicas are pending termination...
+deployment "desktop-ravi01" successfully rolled out
+ubuntu@webserver:~/vdi/desktop-image$ kubectl get pods -n vdi
+kubectl logs deployment/desktop-ravi01 -n vdi
+NAME                             READY   STATUS      RESTARTS   AGE
+cloudflared-7dbb4c9b5-fcdcx      1/1     Running     0          119m
+desktop-ravi01-5967dd9bb-njqmz   1/1     Running     0          36s
+guac-schema                      0/1     Completed   0          164m
+guacamole-6c8d8cb8d-dv688        1/1     Running     0          156m
+guacd-6bbb5bcffb-wnd7x           1/1     Running     0          156m
+postgres-7f7f7fc8c-vb9dc         1/1     Running     0          160m
+Starting XFCE desktop for ravi01
+
+New Xtigervnc server 'desktop-ravi01-5967dd9bb-njqmz:1 (ravi01)' on port 5901 for display :1.
+Use xtigervncviewer -SecurityTypes VncAuth,TLSVnc -passwd /home/ravi01/.vnc/passwd desktop-ravi01-5967dd9bb-njqmz:1 to connect to the VNC server.
+
+ubuntu@webserver:~/vdi/desktop-image$ kubectl exec -n vdi deployment/desktop-ravi01 -- bash -c '
+google-chrome-stable --version
+firefox --version
+ls -l /usr/bin/code
+ls -l /usr/local/bin/antigravity
+'
+Google Chrome 158.0.8127.36
+Mozilla Firefox 160.0.1
+lrwxrwxrwx 1 root root 24 Nov 20 09:25 /usr/bin/code -> /usr/share/code/bin/code
+lrwxrwxrwx 1 root root 32 Nov 20 09:49 /usr/local/bin/antigravity -> /opt/antigravity/antigravity-ide
+ubuntu@webserver:~/vdi/desktop-image$ kubectl get pods -n vdi
+kubectl logs deployment/desktop-ravi01 -n vdi
+NAME                             READY   STATUS      RESTARTS   AGE
+cloudflared-7dbb4c9b5-fcdcx      1/1     Running     0          120m
+desktop-ravi01-5967dd9bb-njqmz   1/1     Running     0          77s
+guac-schema                      0/1     Completed   0          165m
+guacamole-6c8d8cb8d-dv688        1/1     Running     0          156m
+guacd-6bbb5bcffb-wnd7x           1/1     Running     0          156m
+postgres-7f7f7fc8c-vb9dc         1/1     Running     0          160m
+Starting XFCE desktop for ravi01
+
+New Xtigervnc server 'desktop-ravi01-5967dd9bb-njqmz:1 (ravi01)' on port 5901 for display :1.
+Use xtigervncviewer -SecurityTypes VncAuth,TLSVnc -passwd /home/ravi01/.vnc/passwd desktop-ravi01-5967dd9bb-njqmz:1 to connect to the VNC server.
+
+ubuntu@webserver:~/vdi/desktop-image$ cd ~/vdi/desktop-image
+
+cat > ~/vdi/desktop-ravi01.yaml <<'EOF'
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: desktop-ravi01-home
+  namespace: vdi
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: desktop-ravi01
+  namespace: vdi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: desktop-ravi01
+  template:
+    metadata:
+      labels:
+        app: desktop-ravi01
+    spec:
+      containers:
+        - name: desktop
+          image: docker.io/library/vdi-desktop:1.3
+          imagePullPolicy: Never
+          env:
+            - name: DESKTOP_USER
+              value: ravi01
+            - name: VNC_PASSWORD
+              valueFrom:
+EOF   protocol: TCP9011desktop-ravi01-home
+ubuntu@webserver:~/vdi/desktop-image$ kubectl apply -f ~/vdi/desktop-ravi01.yaml
+kubectl rollout status deployment/desktop-ravi01 -n vdi
+persistentvolumeclaim/desktop-ravi01-home unchanged
+deployment.apps/desktop-ravi01 configured
+service/desktop-ravi01 unchanged
+deployment "desktop-ravi01" successfully rolled out
+ubuntu@webserver:~/vdi/desktop-image$ cd
+ubuntu@webserver:~$ wget blob:https://chatgpt.com/63fcfbd5-75c5-4311-a263-967e51090832
+--2026-11-20 10:02:55--  ftp://blob/https://chatgpt.com/63fcfbd5-75c5-4311-a263-967e51090832
+           => ‘63fcfbd5-75c5-4311-a263-967e51090832’
+Resolving blob (blob)... failed: Temporary failure in name resolution.
+wget: unable to resolve host address ‘blob’
+ubuntu@webserver:~$ ls
+Ticket_Managment_System_Webserver  domain-audits                         guacamole.yaml          oomnieye-audit              ticket
+ZAP_2_17_0_unix.sh                 generate-oomnieye-candidates.py       keyword-discovered.txt  oomnieye-candidates.txt     vdi
+actions-runner                     generate-oomnieye-candidates.py.save  known-oomnieye.txt      postgres.yaml               vdi-admin-portal-phase1.zip
+candidates_oomnieye.com.txt        glpi-agent_1.21-1_all.deb             labstackops             resolved_oomnieye.txt       wget-log
+cloudflared.yaml                   go                                    labstackops-backup      subdomain-discovery.sh      wordlist-hostnames.txt
+complete-domain-audit.sh           guac-workspace                        learning-brand          subdomain_oomnieye.com.txt  workspaces
+ubuntu@webserver:~$ unzip vdi-admin-portal-phase1.zip
+Archive:  vdi-admin-portal-phase1.zip
+   creating: phase1/
+   creating: phase1/k8s/
+  inflating: phase1/k8s/rbac.yaml
+  inflating: phase1/k8s/deployment.yaml
+   creating: phase1/backend/
+   creating: phase1/backend/app/
+   creating: phase1/backend/app/__pycache__/
+  inflating: phase1/backend/app/__pycache__/main.cpython-313.pyc
+  inflating: phase1/backend/app/main.py
+  inflating: phase1/backend/Dockerfile
+  inflating: phase1/backend/requirements.txt
+   creating: phase1/frontend/
+  inflating: phase1/frontend/Dockerfile
+  inflating: phase1/frontend/package.json
+  inflating: phase1/frontend/style.css
+  inflating: phase1/frontend/nginx.conf
+  inflating: phase1/frontend/src.jsx
+  inflating: phase1/frontend/index.html
+  inflating: phase1/README.md
+ubuntu@webserver:~$ mkdir -p ~/vdi-admin-portal
+ubuntu@webserver:~$ cp -r phase1 ~/vdi-admin-portal/
+
+cd ~/vdi-admin-portal/phase1
+ubuntu@webserver:~/vdi-admin-portal/phase1$ docker build --platform linux/arm64 \
+  -t vdi-portal-api:0.1.0 ./backend
+
+docker build --platform linux/arm64 \
+  -t vdi-portal-web:0.1.0 ./frontend
+[+] Building 20.5s (10/10) FINISHED                                                                                                          docker:default
+ => [internal] load build definition from Dockerfile                                                                                                   0.0s
+ => => transferring dockerfile: 308B                                                                                                                   0.0s
+ => [internal] load metadata for docker.io/library/python:3.12-slim                                                                                    0.9s
+ => [internal] load .dockerignore                                                                                                                      0.0s
+ => => transferring context: 2B                                                                                                                        0.0s
+ => [1/5] FROM docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b                              1.6s
+ => => resolve docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b                              0.0s
+ => => sha256:0ba3a3e89cd986f09d548ebfd13261fd4ad86bb310bb69923010538e0c5ce222 12.06MB / 12.06MB                                                       0.3s
+ => => sha256:70b4f81c82dc6ea2a5fc08c59c75940cc3f45dad8e2038b7773cd1b6ac24c7a0 249B / 249B                                                             0.3s
+ => => sha256:0373269344dc260a94623aecbafee3cf336984ad3bbe8a49ac047d85aa69be9b 1.27MB / 1.27MB                                                         0.3s
+ => => sha256:acd43e9bebc37bc4ba7a5f47bd7598913337803e53d468f37d940f11f5d5f1ef 30.21MB / 30.21MB                                                       0.5s
+ => => extracting sha256:acd43e9bebc37bc4ba7a5f47bd7598913337803e53d468f37d940f11f5d5f1ef                                                              0.6s
+ => => extracting sha256:0373269344dc260a94623aecbafee3cf336984ad3bbe8a49ac047d85aa69be9b                                                              0.1s
+ => => extracting sha256:0ba3a3e89cd986f09d548ebfd13261fd4ad86bb310bb69923010538e0c5ce222                                                              0.3s
+ => => extracting sha256:70b4f81c82dc6ea2a5fc08c59c75940cc3f45dad8e2038b7773cd1b6ac24c7a0                                                              0.0s
+ => [internal] load build context                                                                                                                      0.0s
+ => => transferring context: 9.73kB                                                                                                                    0.0s
+ => [2/5] WORKDIR /app                                                                                                                                 1.3s
+ => [3/5] COPY requirements.txt .                                                                                                                      0.0s
+ => [4/5] RUN pip install --no-cache-dir -r requirements.txt                                                                                          11.1s
+ => [5/5] COPY app ./app                                                                                                                               0.1s
+ => exporting to image                                                                                                                                 5.4s
+ => => exporting layers                                                                                                                                3.4s
+ => => exporting manifest sha256:4c0d1e749ade6d6a74c3b106936c37b5cbcb92b01868e0708e00cca3bf731a78                                                      0.0s
+ => => exporting config sha256:2b52e06c8459a1bf781ab5f9ec4ea1756b654372e7d99780f49dde75bc8ce326                                                        0.0s
+ => => exporting attestation manifest sha256:894e504fb6feaf043c719b99ed184f8413229a57f5c54c25312c7e189681c533                                          0.0s
+ => => exporting manifest list sha256:ea2d88411444d133047429ac482b829d7140278305903e86f705a5e35844ec4d                                                 0.0s
+ => => naming to docker.io/library/vdi-portal-api:0.1.0                                                                                                0.0s
+ => => unpacking to docker.io/library/vdi-portal-api:0.1.0                                                                                             1.9s
+[+] Building 29.8s (15/15) FINISHED                                                                                                          docker:default
+ => [internal] load build definition from Dockerfile                                                                                                   0.0s
+ => => transferring dockerfile: 276B                                                                                                                   0.0s
+ => [internal] load metadata for docker.io/library/nginx:1.27-alpine                                                                                   0.9s
+ => [internal] load metadata for docker.io/library/node:22-alpine                                                                                      0.8s
+ => [internal] load .dockerignore                                                                                                                      0.0s
+ => => transferring context: 2B                                                                                                                        0.0s
+ => [build 1/6] FROM docker.io/library/node:22-alpine@sha256:1314fb30ec37592d5845e5a160d522c0e680972aa534549940b8d73bde88481a                          2.9s
+ => => resolve docker.io/library/node:22-alpine@sha256:1314fb30ec37592d5845e5a160d522c0e680972aa534549940b8d73bde88481a                                0.0s
+ => => sha256:d7c36ecc3656baea124618f97c50a789bc3876090882a45ef8fb1d053deb7c38 443B / 443B                                                             0.1s
+ => => sha256:bec7aaabd7f9f12cfce96e50f7ed6cca9da43db1dcce21d8b302e2d16db7cd6e 1.26MB / 1.26MB                                                         0.1s
+ => => sha256:1d0a7305242947ff5acc28f1d1658e557b48f99d0f8173d83cdb90950dd8a154 55.70MB / 55.70MB                                                       0.8s
+ => => sha256:b90627b8f4292fd3cb63f0f27f0b11c37f04ba88ef3b78d4948ea0ace18c85e9 4.19MB / 4.19MB                                                         0.4s
+ => => extracting sha256:b90627b8f4292fd3cb63f0f27f0b11c37f04ba88ef3b78d4948ea0ace18c85e9                                                              0.4s
+ => => extracting sha256:1d0a7305242947ff5acc28f1d1658e557b48f99d0f8173d83cdb90950dd8a154                                                              1.4s
+ => => extracting sha256:bec7aaabd7f9f12cfce96e50f7ed6cca9da43db1dcce21d8b302e2d16db7cd6e                                                              0.3s
+ => => extracting sha256:d7c36ecc3656baea124618f97c50a789bc3876090882a45ef8fb1d053deb7c38                                                              0.1s
+ => [stage-1 1/3] FROM docker.io/library/nginx:1.27-alpine@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10                     1.6s
+ => => resolve docker.io/library/nginx:1.27-alpine@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10                             0.0s
+ => => sha256:9994ea1088e3f1d0eb3dea855f32e7e63742b2644c8611c124ba81bc3453047e 16.03MB / 16.03MB                                                       0.3s
+ => => sha256:37aca2470cdaf48d251d9308c09dc8735b45ebcbefada46537c9989991b3fe6d 1.40kB / 1.40kB                                                         0.1s
+ => => sha256:1ab010a063387e697fc32bb43022532c0e275d2e51fb65c2ac541e082e610a33 1.21kB / 1.21kB                                                         0.1s
+ => => sha256:a4ce1202d74643d4e4ce15787afc2402a18802e3d7bfd0f6bf60c912b57eec1f 405B / 405B                                                             0.1s
+ => => sha256:d3282d7e6b7633cf153dce0ca1c72b6ea574edb0b34351f848fb16b7d13c851f 957B / 957B                                                             0.1s
+ => => sha256:e6557c42ebeaea010d8a8883fdacdc5a17dea1221416d0d980e206dd42dc7e29 627B / 627B                                                             0.1s
+ => => sha256:c60e446e49a0b607fd79968afdc54cedce67644990a3930925add6caf577779d 1.79MB / 1.79MB                                                         0.3s
+ => => sha256:6e771e15690e2fabf2332d3a3b744495411d6e0b00b2aea64419b58b0066cf81 3.99MB / 3.99MB                                                         0.3s
+ => => extracting sha256:6e771e15690e2fabf2332d3a3b744495411d6e0b00b2aea64419b58b0066cf81                                                              0.1s
+ => => extracting sha256:c60e446e49a0b607fd79968afdc54cedce67644990a3930925add6caf577779d                                                              0.1s
+ => => extracting sha256:e6557c42ebeaea010d8a8883fdacdc5a17dea1221416d0d980e206dd42dc7e29                                                              0.0s
+ => => extracting sha256:d3282d7e6b7633cf153dce0ca1c72b6ea574edb0b34351f848fb16b7d13c851f                                                              0.0s
+ => => extracting sha256:a4ce1202d74643d4e4ce15787afc2402a18802e3d7bfd0f6bf60c912b57eec1f                                                              0.0s
+ => => extracting sha256:1ab010a063387e697fc32bb43022532c0e275d2e51fb65c2ac541e082e610a33                                                              0.0s
+ => => extracting sha256:37aca2470cdaf48d251d9308c09dc8735b45ebcbefada46537c9989991b3fe6d                                                              0.0s
+ => => extracting sha256:9994ea1088e3f1d0eb3dea855f32e7e63742b2644c8611c124ba81bc3453047e                                                              0.3s
+ => [internal] load build context                                                                                                                      0.1s
+ => => transferring context: 7.75kB                                                                                                                    0.0s
+ => [stage-1 2/3] COPY nginx.conf /etc/nginx/conf.d/default.conf                                                                                       9.1s
+ => [build 2/6] WORKDIR /src                                                                                                                           7.8s
+ => [build 3/6] COPY package.json .                                                                                                                    0.0s
+ => [build 4/6] RUN npm install                                                                                                                       15.6s
+ => [build 5/6] COPY . .                                                                                                                               0.1s
+ => [build 6/6] RUN npm run build                                                                                                                      1.5s
+ => [stage-1 3/3] COPY --from=build /src/dist /usr/share/nginx/html                                                                                    0.0s
+ => exporting to image                                                                                                                                 0.7s
+ => => exporting layers                                                                                                                                0.1s
+ => => exporting manifest sha256:d625b71f8709292af27081fd6d0e5df36b463d20d1fbd715518f37e5b4c132e2                                                      0.0s
+ => => exporting config sha256:3f396969c905de1486f42f78265e216bb696079a4883bda45b3179c50a4746a8                                                        0.0s
+ => => exporting attestation manifest sha256:db517a6a6be2bf4d6dbefc9c82c46807a522dfe34d995b620a9448c2433d176c                                          0.0s
+ => => exporting manifest list sha256:32eafb66eca722e2d26c1973a12dfee5d90612598bb381546dac59d77866f2b6                                                 0.0s
+ => => naming to docker.io/library/vdi-portal-web:0.1.0                                                                                                0.0s
+ => => unpacking to docker.io/library/vdi-portal-web:0.1.0                                                                                             0.5s
+ubuntu@webserver:~/vdi-admin-portal/phase1$ docker save vdi-portal-api:0.1.0 | sudo k3s ctr images import -
+
+docker save vdi-portal-web:0.1.0 | sudo k3s ctr images import -
+docker.io/library/vdi portal api:0.1.0          saved
+application/vnd.oci.image.index.v1+json sha256:ea2d88411444d133047429ac482b829d7140278305903e86f705a5e35844ec4d
+Importing       elapsed: 3.7 s  total:   0.0 B  (0.0 B/s)
+docker.io/library/vdi portal web:0.1.0          saved
+application/vnd.oci.image.index.v1+json sha256:32eafb66eca722e2d26c1973a12dfee5d90612598bb381546dac59d77866f2b6
+Importing       elapsed: 1.2 s  total:   0.0 B  (0.0 B/s)
+ubuntu@webserver:~/vdi-admin-portal/phase1$ docker run --rm -it --entrypoint python vdi-portal-api:0.1.0 -c 'from pwdlib import PasswordHash; import getpass; print(PasswordHash.recommended().hash(getpass.getpass("Enter admin password: ")))'
+Enter admin password:
+$argon2id$v=19$m=65536,t=3,p=4$isejCy7qlzAvOIppMprtgA$j9lkOLro2I+wLJ5NaqIpvNmcec9+RDWNWVdyKLKrk+k
+ubuntu@webserver:~/vdi-admin-portal/phase1$ cd ~/vdi-admin-portal/phase1
+
+echo 'python-multipart==0.0.20' >> backend/requirements.txt
+
+docker build --platform linux/arm64 -t vdi-portal-api:0.1.0 ./backend
+
+docker save vdi-portal-api:0.1.0 | sudo k3s ctr images import -
+[+] Building 16.8s (10/10) FINISHED                                                                                                          docker:default
+ => [internal] load build definition from Dockerfile                                                                                                   0.0s
+ => => transferring dockerfile: 308B                                                                                                                   0.0s
+ => [internal] load metadata for docker.io/library/python:3.12-slim                                                                                    0.6s
+ => [internal] load .dockerignore                                                                                                                      0.0s
+ => => transferring context: 2B                                                                                                                        0.0s
+ => [1/5] FROM docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b                              0.0s
+ => => resolve docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b                              0.0s
+ => [internal] load build context                                                                                                                      0.0s
+ => => transferring context: 337B                                                                                                                      0.0s
+ => CACHED [2/5] WORKDIR /app                                                                                                                          0.0s
+ => [3/5] COPY requirements.txt .                                                                                                                      0.0s
+ => [4/5] RUN pip install --no-cache-dir -r requirements.txt                                                                                          11.5s
+ => [5/5] COPY app ./app                                                                                                                               0.1s
+ => exporting to image                                                                                                                                 4.4s
+ => => exporting layers                                                                                                                                3.4s
+ => => exporting manifest sha256:1ed5e191039b1a5a9a971e515a149618232b637066c4c3bcf7823ad24d7b686f                                                      0.0s
+ => => exporting config sha256:7610fd35edde9a14cbf439d9ca09b00046edefd2614d09fd3fbf3d1e96e1709c                                                        0.0s
+ => => exporting attestation manifest sha256:daf67f6c2538532ccab2ee659d65cf9e366ca9e26d803cd3ab8025ba1479ccb4                                          0.0s
+ => => exporting manifest list sha256:650ea44239a8feab2a7755bd3ec0d8b5d31787b6391279acdad5cc4e8bb9c80e                                                 0.0s
+ => => naming to docker.io/library/vdi-portal-api:0.1.0                                                                                                0.0s
+ => => unpacking to docker.io/library/vdi-portal-api:0.1.0                                                                                             0.9s
+docker.io/library/vdi portal api:0.1.0          saved
+application/vnd.oci.image.index.v1+json sha256:650ea44239a8feab2a7755bd3ec0d8b5d31787b6391279acdad5cc4e8bb9c80e
+Importing       elapsed: 2.7 s  total:   0.0 B  (0.0 B/s)
+ubuntu@webserver:~/vdi-admin-portal/phase1$ docker run --rm -it --entrypoint python vdi-portal-api:0.1.0 -c 'from pwdlib import PasswordHash; import getpass; print(PasswordHash.recommended().hash(getpass.getpass("Enter admin password: ")))'
+Enter admin password:
+$argon2id$v=19$m=65536,t=3,p=4$SYmuBGvC4387gAMAdAMZTg$riM8ig2RLaMeXNVavQ8zzl20WjI+Wsuk+FzpDnK/+mM
+ubuntu@webserver:~/vdi-admin-portal/phase1$ read -rsp "JWT signing secret (press Enter to generate): " JWT_SECRET
+echo
+[ -n "$JWT_SECRET" ] || JWT_SECRET=$(openssl rand -hex 32)
+
+kubectl create secret generic vdi-portal-auth -n vdi \
+  --from-literal=ADMIN_USERNAME=admin \
+  --from-literal=ADMIN_PASSWORD_HASH='PASTE_ARGON2_HASH_HERE' \
+  --from-literal=JWT_SECRET="$JWT_SECRET" \
+  --dry-run=client -o yaml | kubectl apply -f -
+
+unset JWT_SECRET
+JWT signing secret (press Enter to generate):
+secret/vdi-portal-auth created
+ubuntu@webserver:~/vdi-admin-portal/phase1$ kubectl apply -f k8s/deployment.yaml
+deployment.apps/vdi-portal-api created
+service/vdi-portal-api created
+deployment.apps/vdi-portal-web created
+service/vdi-portal-web created
+ubuntu@webserver:~/vdi-admin-portal/phase1$
+ubuntu@webserver:~/vdi-admin-portal/phase1$ kubectl rollout status deployment/vdi-portal-api -n vdi
+Waiting for deployment "vdi-portal-api" rollout to finish: 0 out of 1 new replicas have been updated...
+
+
+
+
+^Cubuntu@webserver:~/vdi-admin-portal/phase1kubectl get pods -n vdidi
+kubectl logs deployment/vdi-portal-api -n vdi --tail=100
+NAME                              READY   STATUS      RESTARTS   AGE
+cloudflared-7dbb4c9b5-fcdcx       1/1     Running     0          136m
+desktop-ravi01-5967dd9bb-njqmz    1/1     Running     0          17m
+guac-schema                       0/1     Completed   0          3h2m
+guacamole-6c8d8cb8d-dv688         1/1     Running     0          173m
+guacd-6bbb5bcffb-wnd7x            1/1     Running     0          173m
+postgres-7f7f7fc8c-vb9dc          1/1     Running     0          177m
+vdi-portal-web-77bbf6cbff-cnncd   1/1     Running     0          93s
+
+
+
+ubuntu@webserver:~/vdi-admin-portal/phase1$ kubectl get deployment vdi-portal-api -n vdi -o widede
+kubectl get pods -n vdi -o wide
+NAME             READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                 SELECTOR
+vdi-portal-api   0/1     0            0           54m   api          vdi-portal-api:0.1.0   app=vdi-portal-api
+NAME                              READY   STATUS      RESTARTS   AGE     IP           NODE        NOMINATED NODE   READINESS GATES
+cloudflared-7dbb4c9b5-fcdcx       1/1     Running     0          3h9m    10.42.0.18   webserver   <none>           <none>
+desktop-ravi01-5967dd9bb-njqmz    1/1     Running     0          70m     10.42.0.21   webserver   <none>           <none>
+guac-schema                       0/1     Completed   0          3h54m   10.42.0.9    webserver   <none>           <none>
+guacamole-6c8d8cb8d-dv688         1/1     Running     0          3h45m   10.42.0.12   webserver   <none>           <none>
+guacd-6bbb5bcffb-wnd7x            1/1     Running     0          3h45m   10.42.0.13   webserver   <none>           <none>
+postgres-7f7f7fc8c-vb9dc          1/1     Running     0          3h50m   10.42.0.11   webserver   <none>           <none>
+vdi-portal-web-77bbf6cbff-cnncd   1/1     Running     0          54m     10.42.0.22   webserver   <none>           <none>
+ubuntu@webserver:~/vdi-admin-portal/phase1$ kubectl describe deployment vdi-portal-api -n vdi
+Name:                   vdi-portal-api
+Namespace:              vdi
+CreationTimestamp:      Fri, 20 Nov 2026 10:09:56 +0000
+Labels:                 <none>
+Annotations:            deployment.kubernetes.io/revision: 1
+Selector:               app=vdi-portal-api
+Replicas:               1 desired | 0 updated | 0 total | 0 available | 1 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:           app=vdi-portal-api
+  Service Account:  vdi-portal
+  Containers:
+   api:
+    Image:      vdi-portal-api:0.1.0
+    Port:       8000/TCP
+    Host Port:  0/TCP
+    Limits:
+      cpu:     500m
+      memory:  512Mi
+    Requests:
+      cpu:      100m
+      memory:   128Mi
+    Liveness:   http-get http://:8000/api/health delay=0s timeout=1s period=10s successThreshold=1 failureThreshold=3
+    Readiness:  http-get http://:8000/api/health delay=0s timeout=1s period=10s successThreshold=1 failureThreshold=3
+    Environment Variables from:
+      vdi-portal-auth  Secret  Optional: false
+    Environment:
+      VDI_NAMESPACE:  vdi
+    Mounts:           <none>
+  Volumes:            <none>
+  Node-Selectors:     <none>
+  Tolerations:        <none>
+Conditions:
+  Type             Status  Reason
+  ----             ------  ------
+  Available        False   MinimumReplicasUnavailable
+  ReplicaFailure   True    FailedCreate
+  Progressing      False   ProgressDeadlineExceeded
+OldReplicaSets:    <none>
+NewReplicaSet:     vdi-portal-api-5b9bbb8c5c (0/1 replicas created)
+Events:
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  54m   deployment-controller  Scaled up replica set vdi-portal-api-5b9bbb8c5c from 0 to 1
+ubuntu@webserver:~/vdi-admin-portal/phase1$ kubectl logs deployment/vdi-portal-api -n vdi --all-pods=true --tail=100
+^Cubuntu@webserver:~/vdi-admin-portal/phase1kubectl get events -n vdi --sort-by='.lastTimestamp' | tail -2525
+LAST SEEN   TYPE      REASON              OBJECT                                 MESSAGE
+54m         Normal    Scheduled           pod/vdi-portal-web-77bbf6cbff-cnncd    Successfully assigned vdi/vdi-portal-web-77bbf6cbff-cnncd to webserver
+54m         Normal    ScalingReplicaSet   deployment/vdi-portal-api              Scaled up replica set vdi-portal-api-5b9bbb8c5c from 0 to 1
+54m         Normal    SuccessfulCreate    replicaset/vdi-portal-web-77bbf6cbff   Created pod: vdi-portal-web-77bbf6cbff-cnncd
+54m         Normal    ScalingReplicaSet   deployment/vdi-portal-web              Scaled up replica set vdi-portal-web-77bbf6cbff from 0 to 1
+54m         Normal    Pulled              pod/vdi-portal-web-77bbf6cbff-cnncd    Container image "vdi-portal-web:0.1.0" already present on machine and can be accessed by the pod
+54m         Normal    Created             pod/vdi-portal-web-77bbf6cbff-cnncd    Container created
+54m         Normal    Started             pod/vdi-portal-web-77bbf6cbff-cnncd    Container started
+54m         Warning   Unhealthy           pod/vdi-portal-web-77bbf6cbff-cnncd    Readiness probe failed: Get "http://10.42.0.22:8080/": dial tcp 10.42.0.22:8080: connect: connection refused
+15m         Warning   FailedCreate        replicaset/vdi-portal-api-5b9bbb8c5c   Error creating: pods "vdi-portal-api-5b9bbb8c5c-" is forbidden: error looking up service account vdi/vdi-portal: serviceaccount "vdi-portal" not found
+ubuntu@webserver:~/vdi-admin-portal/phase1$ kubectl apply -f k8s/rbac.yaml
+serviceaccount/vdi-portal created
+role.rbac.authorization.k8s.io/vdi-portal-readonly created
+rolebinding.rbac.authorization.k8s.io/vdi-portal-readonly created
+ubuntu@webserver:~/vdi-admin-portal/phase1$ kubectl get serviceaccount vdi-portal -n vdi
+kubectl get role,rolebinding -n vdi
+NAME         AGE
+vdi-portal   5s
+NAME                                                 CREATED AT
+role.rbac.authorization.k8s.io/vdi-portal-readonly   2026-11-20T11:04:43Z
+
+NAME                                                        ROLE                       AGE
+rolebinding.rbac.authorization.k8s.io/vdi-portal-readonly   Role/vdi-portal-readonly   5s
+ubuntu@webserver:~/vdi-admin-portal/phase1$ kubectl get serviceaccount vdi-portal -n vdi
+kubectl get role,rolebinding -n vdi
+NAME         AGE
+vdi-portal   14s
+NAME                                                 CREATED AT
+role.rbac.authorization.k8s.io/vdi-portal-readonly   2026-11-20T11:04:43Z
+
+NAME                                                        ROLE                       AGE
+rolebinding.rbac.authorization.k8s.io/vdi-portal-readonly   Role/vdi-portal-readonly   14s
+ubuntu@webserver:~/vdi-admin-portal/phase1$ kubectl get serviceaccount vdi-portal -n vdi
+kubectl get role,rolebinding -n vdi
+NAME         AGE
+vdi-portal   19s
+NAME                                                 CREATED AT
+role.rbac.authorization.k8s.io/vdi-portal-readonly   2026-11-20T11:04:43Z
+
+NAME                                                        ROLE                       AGE
+rolebinding.rbac.authorization.k8s.io/vdi-portal-readonly   Role/vdi-portal-readonly   19s
+ubuntu@webserver:~/vdi-admin-portal/phase1$ kubectl describe pod -n vdi -l app=vdi-portal-api
+kubectl logs deployment/vdi-portal-api -n vdi --tail=100
+Name:             vdi-portal-api-5b9bbb8c5c-94742
+Namespace:        vdi
+Priority:         0
+Service Account:  vdi-portal
+Node:             webserver/10.0.0.120
+Start Time:       Fri, 20 Nov 2026 11:05:07 +0000
+Labels:           app=vdi-portal-api
+                  pod-template-hash=5b9bbb8c5c
+Annotations:      <none>
+Status:           Running
+IP:               10.42.0.23
+IPs:
+  IP:           10.42.0.23
+Controlled By:  ReplicaSet/vdi-portal-api-5b9bbb8c5c
+Containers:
+  api:
+    Container ID:   containerd://277f42a6a1504737d33e1a7304646a2373322a55761b855c7c6c0d1d4006d283
+    Image:          vdi-portal-api:0.1.0
+    Image ID:       sha256:7610fd35edde9a14cbf439d9ca09b00046edefd2614d09fd3fbf3d1e96e1709c
+    Port:           8000/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Fri, 20 Nov 2026 11:05:08 +0000
+    Ready:          False
+    Restart Count:  0
+    Limits:
+      cpu:     500m
+      memory:  512Mi
+    Requests:
+      cpu:      100m
+      memory:   128Mi
+    Liveness:   http-get http://:8000/api/health delay=0s timeout=1s period=10s successThreshold=1 failureThreshold=3
+    Readiness:  http-get http://:8000/api/health delay=0s timeout=1s period=10s successThreshold=1 failureThreshold=3
+    Environment Variables from:
+      vdi-portal-auth  Secret  Optional: false
+    Environment:
+      VDI_NAMESPACE:  vdi
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-k6zzp (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True
+  Initialized                 True
+  Ready                       False
+  ContainersReady             False
+  PodScheduled                True
+Volumes:
+  kube-api-access-k6zzp:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age              From               Message
+  ----     ------     ----             ----               -------
+  Normal   Scheduled  2s               default-scheduler  Successfully assigned vdi/vdi-portal-api-5b9bbb8c5c-94742 to webserver
+  Normal   Pulled     2s               kubelet            spec.containers{api}: Container image "vdi-portal-api:0.1.0" already present on machine and can be accessed by the pod
+  Normal   Created    2s               kubelet            spec.containers{api}: Container created
+  Normal   Started    2s               kubelet            spec.containers{api}: Container started
+  Warning  Unhealthy  2s (x2 over 2s)  kubelet            spec.containers{api}: Readiness probe failed: Get "http://10.42.0.23:8000/api/health": dial tcp 10.42.0.23:8000: connect: connection refused
+ubuntu@webserver:~/vdi-admin-portal/phase1$

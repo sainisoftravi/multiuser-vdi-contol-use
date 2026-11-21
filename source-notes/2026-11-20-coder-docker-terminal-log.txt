@@ -1,0 +1,268 @@
+===== CPU =====
+CPU(s):                                  4
+On-line CPU(s) list:                     0-3
+Model name:                              Neoverse-N1
+NUMA node0 CPU(s):                       0-3
+===== RAM =====
+               total        used        free      shared  buff/cache   available
+Mem:            11Gi       2.2Gi       302Mi       173Mi       9.1Gi       9.0Gi
+Swap:          4.0Gi       1.0Mi       4.0Gi
+===== DISK =====
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1        45G   34G   12G  76% /
+===== ARCHITECTURE =====
+aarch64
+===== DOCKER =====
+aarch64
+ubuntu@webserver:~/labstackops$ docker buildx imagetools inspect ghcr.io/coder/coder:latest
+
+docker buildx imagetools inspect postgres:17
+
+docker buildx imagetools inspect codercom/example-desktop:ubuntu-noble-20260629
+Name:      ghcr.io/coder/coder:latest
+MediaType: application/vnd.docker.distribution.manifest.list.v2+json
+Digest:    sha256:2ce6b2ab5b78afe05da8b62184efc7950bb0e53a32dcefab4ef1c9b22c15631a
+
+Manifests:
+  Name:      ghcr.io/coder/coder:latest@sha256:4c3ca56cffcb5c77eafd8eb378e43b2bb74ab501f44d0f82817ff7794a480529
+  MediaType: application/vnd.docker.distribution.manifest.v2+json
+  Platform:  linux/amd64
+
+  Name:      ghcr.io/coder/coder:latest@sha256:775381055d6024ae1802af44e513a2d176ab82a11aeb6f01ce3535903a0843cf
+  MediaType: application/vnd.docker.distribution.manifest.v2+json
+  Platform:  linux/arm64
+
+  Name:      ghcr.io/coder/coder:latest@sha256:f525cdd9018f47593d81540c8a6c318337c6f2c0985f948204d2bdf8d2be184e
+  MediaType: application/vnd.docker.distribution.manifest.v2+json
+  Platform:  linux/arm/v7
+Name:      docker.io/library/postgres:17
+MediaType: application/vnd.oci.image.index.v1+json
+Digest:    sha256:b60e90042aa6b8dbecd58e224b3e36114dbf8ad754465264c2476ad58a86e45c
+
+Manifests:
+  Name:        docker.io/library/postgres:17@sha256:9d4105e2fcb1308961d4ee01f0ebc14fdd0497b11243982a4a0935fdb1a8f8dc
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    linux/amd64
+  Annotations:
+    org.opencontainers.image.source:          https://github.com/docker-library/postgres.git#ac9627dcf544a8454f212a12ddeebfcdc0803d3e:17/trixie
+    org.opencontainers.image.url:             https://hub.docker.com/_/postgres
+    org.opencontainers.image.version:         17.12
+    com.docker.official-images.bashbrew.arch: amd64
+    org.opencontainers.image.base.digest:     sha256:7378260c0a098d27ac206225db5e7d92b8c7c84ea7afccc86eeb513756bbd392
+    org.opencontainers.image.base.name:       debian:trixie-slim
+    org.opencontainers.image.created:         2026-11-18T21:28:47Z
+    org.opencontainers.image.revision:        ac9627dcf544a8454f212a12ddeebfcdc0803d3e
+
+  Name:        docker.io/library/postgres:17@sha256:3a2df9b1cc96f88fd0e8b1be255ab584146d2c67362bacd82b25bef5e4d0f33c
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    unknown/unknown
+  Annotations:
+    com.docker.official-images.bashbrew.arch: amd64
+    vnd.docker.reference.digest:              sha256:9d4105e2fcb1308961d4ee01f0ebc14fdd0497b11243982a4a0935fdb1a8f8dc
+    vnd.docker.reference.type:                attestation-manifest
+
+  Name:        docker.io/library/postgres:17@sha256:10a8204b85d15a493d51a8fd343f378302a7f9e4aeb0c382bb6be908b7565847
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    linux/arm/v5
+  Annotations:
+    org.opencontainers.image.revision:        ac9627dcf544a8454f212a12ddeebfcdc0803d3e
+    org.opencontainers.image.source:          https://github.com/docker-library/postgres.git#ac9627dcf544a8454f212a12ddeebfcdc0803d3e:17/trixie
+    org.opencontainers.image.url:             https://hub.docker.com/_/postgres
+    org.opencontainers.image.version:         17.12
+    com.docker.official-images.bashbrew.arch: arm32v5
+    org.opencontainers.image.base.digest:     sha256:3148a36a94641973336525f60d8fdcc2610495375b53891d13d0072e66d08f67
+    org.opencontainers.image.base.name:       debian:trixie-slim
+    org.opencontainers.image.created:         2026-11-18T21:27:48Z
+
+  Name:        docker.io/library/postgres:17@sha256:a5072be9bc7ef15f9354825c1c36ec098c735a84e91351018af5c58dd920f7ac
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    unknown/unknown
+  Annotations:
+    com.docker.official-images.bashbrew.arch: arm32v5
+    vnd.docker.reference.digest:              sha256:10a8204b85d15a493d51a8fd343f378302a7f9e4aeb0c382bb6be908b7565847
+    vnd.docker.reference.type:                attestation-manifest
+
+  Name:        docker.io/library/postgres:17@sha256:5b87664db59b4237b2230d77fbc62a16905f9703c034abb5c7a4d4f2d7882da4
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    linux/arm/v7
+  Annotations:
+    org.opencontainers.image.url:             https://hub.docker.com/_/postgres
+    org.opencontainers.image.version:         17.12
+    com.docker.official-images.bashbrew.arch: arm32v7
+    org.opencontainers.image.base.digest:     sha256:ced25bc1bff26885d07c82647bc5ad766731d578e8cbc0d02b2e45b2095eaa67
+    org.opencontainers.image.base.name:       debian:trixie-slim
+    org.opencontainers.image.created:         2026-11-18T21:42:15Z
+    org.opencontainers.image.revision:        ac9627dcf544a8454f212a12ddeebfcdc0803d3e
+    org.opencontainers.image.source:          https://github.com/docker-library/postgres.git#ac9627dcf544a8454f212a12ddeebfcdc0803d3e:17/trixie
+
+  Name:        docker.io/library/postgres:17@sha256:94baeb03e70c80ad0f5483a50efb8e85be579a771caf2707d539cceae20c0187
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    unknown/unknown
+  Annotations:
+    com.docker.official-images.bashbrew.arch: arm32v7
+    vnd.docker.reference.digest:              sha256:5b87664db59b4237b2230d77fbc62a16905f9703c034abb5c7a4d4f2d7882da4
+    vnd.docker.reference.type:                attestation-manifest
+
+  Name:        docker.io/library/postgres:17@sha256:a4230815d0ed0963b4273796bd1b271c1c73db36f846c5f29d97fef63eba811e
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    linux/arm64/v8
+  Annotations:
+    org.opencontainers.image.base.digest:     sha256:24a01011d10eba3a023bc8585b9650b8b29021240d4217c05b905e09ef4a5232
+    org.opencontainers.image.base.name:       debian:trixie-slim
+    org.opencontainers.image.created:         2026-11-18T21:29:01Z
+    org.opencontainers.image.revision:        ac9627dcf544a8454f212a12ddeebfcdc0803d3e
+    org.opencontainers.image.source:          https://github.com/docker-library/postgres.git#ac9627dcf544a8454f212a12ddeebfcdc0803d3e:17/trixie
+    org.opencontainers.image.url:             https://hub.docker.com/_/postgres
+    org.opencontainers.image.version:         17.12
+    com.docker.official-images.bashbrew.arch: arm64v8
+
+  Name:        docker.io/library/postgres:17@sha256:2c3e698011a965f6d852e2db97cd2acf6e18d43ff855737ef66baeb32b17f9db
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    unknown/unknown
+  Annotations:
+    com.docker.official-images.bashbrew.arch: arm64v8
+    vnd.docker.reference.digest:              sha256:a4230815d0ed0963b4273796bd1b271c1c73db36f846c5f29d97fef63eba811e
+    vnd.docker.reference.type:                attestation-manifest
+
+  Name:        docker.io/library/postgres:17@sha256:c7b6ccb22fe99a28d746fda669f398732eb2a2fcfc1fbfff3f9a90b26b16ed40
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    linux/386
+  Annotations:
+    org.opencontainers.image.base.digest:     sha256:2f17e429fd4047b0ca5ed190bf3fb5b199c30652a8912cd59649e0b04527bdae
+    org.opencontainers.image.base.name:       debian:trixie-slim
+    org.opencontainers.image.created:         2026-11-18T21:28:19Z
+    org.opencontainers.image.revision:        ac9627dcf544a8454f212a12ddeebfcdc0803d3e
+    org.opencontainers.image.source:          https://github.com/docker-library/postgres.git#ac9627dcf544a8454f212a12ddeebfcdc0803d3e:17/trixie
+    org.opencontainers.image.url:             https://hub.docker.com/_/postgres
+    org.opencontainers.image.version:         17.12
+    com.docker.official-images.bashbrew.arch: i386
+
+  Name:        docker.io/library/postgres:17@sha256:4b7887588ece6afba9d09434cc5dd321e572dbedd6d24016ca0fe5da727edbce
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    unknown/unknown
+  Annotations:
+    com.docker.official-images.bashbrew.arch: i386
+    vnd.docker.reference.digest:              sha256:c7b6ccb22fe99a28d746fda669f398732eb2a2fcfc1fbfff3f9a90b26b16ed40
+    vnd.docker.reference.type:                attestation-manifest
+
+  Name:        docker.io/library/postgres:17@sha256:237c7984e5b20d27ac1562e06c45d95115c1d965d9be5d4a4ca46bc776eebfc2
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    linux/ppc64le
+  Annotations:
+    org.opencontainers.image.created:         2026-11-18T21:43:37Z
+    org.opencontainers.image.revision:        ac9627dcf544a8454f212a12ddeebfcdc0803d3e
+    org.opencontainers.image.source:          https://github.com/docker-library/postgres.git#ac9627dcf544a8454f212a12ddeebfcdc0803d3e:17/trixie
+    org.opencontainers.image.url:             https://hub.docker.com/_/postgres
+    org.opencontainers.image.version:         17.12
+    com.docker.official-images.bashbrew.arch: ppc64le
+    org.opencontainers.image.base.digest:     sha256:89ff4dab6f0566b916409a75d9e68fc66058aa327f69a80139eca5288b662f89
+    org.opencontainers.image.base.name:       debian:trixie-slim
+
+  Name:        docker.io/library/postgres:17@sha256:16b661b19b92e540d0efda4adca45cd022c87169f1fd33ad4f124d6f558910c6
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    unknown/unknown
+  Annotations:
+    vnd.docker.reference.type:                attestation-manifest
+    com.docker.official-images.bashbrew.arch: ppc64le
+    vnd.docker.reference.digest:              sha256:237c7984e5b20d27ac1562e06c45d95115c1d965d9be5d4a4ca46bc776eebfc2
+
+  Name:        docker.io/library/postgres:17@sha256:e37d7fda7009a1e89de14da23914a5f589a56b68e4752f0b7938c153a52bafb5
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    linux/riscv64
+  Annotations:
+    org.opencontainers.image.version:         17.12
+    com.docker.official-images.bashbrew.arch: riscv64
+    org.opencontainers.image.base.digest:     sha256:8262446fd210d732d072b0a09ba1dd015055971e642c82d145afe5ed88a059e7
+    org.opencontainers.image.base.name:       debian:trixie-slim
+    org.opencontainers.image.created:         2026-11-15T02:48:59Z
+    org.opencontainers.image.revision:        76a70e36d51517f2ab061a9bb60b1980a6902e29
+    org.opencontainers.image.source:          https://github.com/docker-library/postgres.git#76a70e36d51517f2ab061a9bb60b1980a6902e29:17/trixie
+    org.opencontainers.image.url:             https://hub.docker.com/_/postgres
+
+  Name:        docker.io/library/postgres:17@sha256:d199e42cf474785319e2a9962b8c1d7a998320613f63f137a15484043e94fbb2
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    unknown/unknown
+  Annotations:
+    com.docker.official-images.bashbrew.arch: riscv64
+    vnd.docker.reference.digest:              sha256:e37d7fda7009a1e89de14da23914a5f589a56b68e4752f0b7938c153a52bafb5
+    vnd.docker.reference.type:                attestation-manifest
+
+  Name:        docker.io/library/postgres:17@sha256:4839725f50d2b4335a087c4af8d4056ba72628d042bfe5fd010a5d47bfbbf9e2
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    linux/s390x
+  Annotations:
+    org.opencontainers.image.created:         2026-11-18T22:53:21Z
+    org.opencontainers.image.revision:        ac9627dcf544a8454f212a12ddeebfcdc0803d3e
+    org.opencontainers.image.source:          https://github.com/docker-library/postgres.git#ac9627dcf544a8454f212a12ddeebfcdc0803d3e:17/trixie
+    org.opencontainers.image.url:             https://hub.docker.com/_/postgres
+    org.opencontainers.image.version:         17.12
+    com.docker.official-images.bashbrew.arch: s390x
+    org.opencontainers.image.base.digest:     sha256:31622eb35d6cf34271fbdafc934459f4bca3e4d188762e45826af2dbd4a20063
+    org.opencontainers.image.base.name:       debian:trixie-slim
+
+  Name:        docker.io/library/postgres:17@sha256:d4119221d227bc0fc7d81b99d1bf0ba34c86d6f4bf5e5062091df96c527a7dfb
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    unknown/unknown
+  Annotations:
+    vnd.docker.reference.digest:              sha256:4839725f50d2b4335a087c4af8d4056ba72628d042bfe5fd010a5d47bfbbf9e2
+    vnd.docker.reference.type:                attestation-manifest
+    com.docker.official-images.bashbrew.arch: s390x
+Name:      docker.io/codercom/example-desktop:ubuntu-noble-20260629
+MediaType: application/vnd.oci.image.index.v1+json
+Digest:    sha256:501856438fbf6c1276ab035f7b041e4d97d67efd83c294383f4e1ba383051ef3
+
+Manifests:
+  Name:        docker.io/codercom/example-desktop:ubuntu-noble-20260629@sha256:6f4602b50d57c30031255501f7cd1e3fe04a6413ed3142f6d533f46ed920c657
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    linux/amd64
+
+  Name:        docker.io/codercom/example-desktop:ubuntu-noble-20260629@sha256:340cfd145652872a8ac69222947430481a7618d02301f64a865abd133b3659ac
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    unknown/unknown
+  Annotations:
+    vnd.docker.reference.digest: sha256:6f4602b50d57c30031255501f7cd1e3fe04a6413ed3142f6d533f46ed920c657
+    vnd.docker.reference.type:   attestation-manifest
+
+  Name:        docker.io/codercom/example-desktop:ubuntu-noble-20260629@sha256:182b19882dd627d18a6afb03e50949f261e3060887e6543592ddc6f0412c24cd
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    linux/arm64
+
+  Name:        docker.io/codercom/example-desktop:ubuntu-noble-20260629@sha256:500fdb04401d3a50b2518f1a21a734251fc55883184b97bbcb4c2ab04d9fd9ed
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    unknown/unknown
+  Annotations:
+    vnd.docker.reference.digest: sha256:182b19882dd627d18a6afb03e50949f261e3060887e6543592ddc6f0412c24cd
+    vnd.docker.reference.type:   attestation-manifest
+ubuntu@webserver:~/labstackops$ docker compose ps
+
+docker images
+
+docker system df
+
+df -h /
+NAME                   IMAGE                        COMMAND                  SERVICE    CREATED              STATUS                        PORTS
+labstackops-coder      ghcr.io/coder/coder:latest   "/opt/coder server"      coder      About a minute ago   Up About a minute             10.0.0.120:7080->7080/tcp
+labstackops-postgres   postgres:17                  "docker-entrypoint.s…"   database   About a minute ago   Up About a minute (healthy)   5432/tcp
+                                                                                                                                        i Info →   U  In Use
+IMAGE                                             ID             DISK USAGE   CONTENT SIZE   EXTRA
+chatwoot/chatwoot:latest                          0ea1fdeecf99       3.45GB          746MB    U
+cloudflare/cloudflared:latest                     e613aadbc2d9        106MB         28.5MB    U
+ghcr.io/coder/coder:latest                        2ce6b2ab5b78        710MB          217MB    U
+ghcr.io/rmyndharis/openwa:latest                  5d4e2d71d380       2.17GB          540MB    U
+glpi/glpi:latest                                  02b4e8146b9b       1.69GB          368MB    U
+lscr.io/linuxserver/chrome:latest                 ccfe0596e117       4.21GB         1.12GB
+mariadb:10.11                                     d769e3796082        437MB          104MB    U
+oznu/guacamole:latest                             6268b3a08d9b       2.08GB          557MB
+pgvector/pgvector:pg15                            88164492558c        631MB          152MB    U
+postgres:15-alpine                                aae6554de426        408MB          114MB
+postgres:17                                       b60e90042aa6        696MB          172MB    U
+redis:alpine                                      71885d8cc6e4        161MB         39.7MB    U
+ticket_managment_system_webserver-bridge:latest   224b39d74bf3        270MB         58.4MB    U
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          13        10        16.6GB    6.692GB (40%)
+Containers      12        12        167.4MB   0B (0%)
+Local Volumes   15        10        3.157GB   891.9MB (28%)
+Build Cache     14        0         270MB     242.4kB
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1        45G   34G   12G  76% /
+ubuntu@webserver:~/labstackops$
